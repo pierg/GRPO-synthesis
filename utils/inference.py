@@ -1,6 +1,6 @@
 import torch
 from tokenizer.tokenizer import Tokenizer 
-from qwen import Transformer
+from qwen.model import Transformer
 
 
 def generate_response(

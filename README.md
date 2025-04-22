@@ -12,6 +12,13 @@ git clone https://huggingface.co/Qwen/Qwen2.5-3B-Instruct
 cd ..
 ```
 
+2. Download the countdown dataset:
+```bash
+cd data
+git clone https://huggingface.co/datasets/Jiayi-Pan/Countdown-Tasks-3to4
+cd ..
+```
+
 ## Installation
 
 1. Install [uv](https://github.com/astral-sh/uv) if you haven't already:
@@ -26,23 +33,14 @@ uv sync
 
 ## Usage
 
-Run the inference example:
+Run inference on a sample chat:
 ```bash
 uv run inference_example.py
 ```
+This script demonstrates the model's text generation capabilities with a simple chat example.
 
-The example will:
-1. Load the Qwen2.5-3B-Instruct model
-2. Process a sample chat conversation
-3. Generate and display the model's response token by token
-
-## Project Structure
-
-- `qwen/`: Core model implementation
-  - `config.py`: Model configuration
-  - `model.py`: Transformer model implementation
-  - `modules.py`: Model components (attention, feed-forward, etc.)
-  - `utils.py`: Helper functions
-- `tokenizer/`: Tokenizer implementation
-- `utils/`: Utility functions for loading, inference, and logging
-- `inference_example.py`: Example usage of the model
+Generate training episodes for fine-tuning:
+```bash
+uv run generate_episodes.py --batch_size 4 --num_answers 4 --max_gen_len 512 --resume --print_generation
+```
+This script generates multiple responses per question and evaluates them using the countdown task reward function.

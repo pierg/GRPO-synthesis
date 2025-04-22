@@ -1,7 +1,7 @@
 import torch
 from pathlib import Path
 from loguru import logger
-from qwen import Transformer
+from qwen.model import Transformer
 from tokenizer.tokenizer import Tokenizer
 
 
