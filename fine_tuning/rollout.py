@@ -24,7 +24,7 @@ def rollout(
     end_token = tokenizer.eos_token
     end_token_id = tokenizer.eos_token_id
     pad_token_id = tokenizer.pad_token_id
-    
+
     # Prepare batch for generation
     prefix_token_ids = batch.prefix_token_ids
     bsz = len(batch.prefix) * num_answer_per_question
@@ -42,12 +42,14 @@ def rollout(
 
     # Initialize tokens tensor with padding
     tokens = torch.full((bsz, total_len), pad_token_id, dtype=torch.long, device=device)
-    
+
     # Fill in input prompts
     for k, t in enumerate(prefix_token_ids):
         offset = k * num_answer_per_question
         for i in range(num_answer_per_question):
-            tokens[offset + i, : len(t)] = torch.tensor(t, dtype=torch.long, device=device)
+            tokens[offset + i, : len(t)] = torch.tensor(
+                t, dtype=torch.long, device=device
+            )
 
     # Initialize generation state
     prev_pos = 0
@@ -66,29 +68,29 @@ def rollout(
         with torch.autocast(device_type=device.type, dtype=dtype):
             logits = model.inference(tokens[:, prev_pos:cur_pos], prev_pos)
         probs = torch.softmax(logits[:, -1], dim=-1)
-        
+
         # Sample next token and handle padding/finished sequences
         next_token = torch.multinomial(probs, num_samples=1).reshape(-1)
         next_token = torch.where(
             input_text_mask[:, cur_pos], tokens[:, cur_pos], next_token
         )
         next_token = torch.where(is_finished, pad_token_id, next_token)
-        
+
         tokens[:, cur_pos] = next_token
-        
+
         # Print new token if requested
         if print_generation:
             new_token = tokens[0][cur_pos].item()
             token = tokenizer.convert_ids_to_tokens([new_token])[0]
             readable_token = tokenizer.convert_token_to_readable(token)
             print(readable_token, end="", flush=True)
-        
+
         # Check for end of sequence
         if end_token_id is not None:
             is_end_token = next_token == end_token_id
             is_generated_token = ~input_text_mask[:, cur_pos]
             is_finished = is_finished | (is_end_token & is_generated_token)
-        
+
         prev_pos = cur_pos
         if is_finished.all():
             break
@@ -113,7 +115,7 @@ def rollout(
                     : generated_token_ids.index(pad_token_id)
                 ]
             generated_text = tokenizer.detokenize(generated_token_ids)
-            
+
             # Compute rewards
             rewards = reward_function(
                 response=generated_text,
@@ -121,7 +123,7 @@ def rollout(
                 target=batch.target[i],
                 end_token=end_token,
             )
-            
+
             # Create episode
             episode = Episode(
                 prefix=batch.prefix[i],
@@ -134,6 +136,6 @@ def rollout(
                 reward_info=rewards["reward_info"],
             )
             episodes.append(episode)
-    
+
     print("\r", end=" " * 100, flush=True)
-    return episodes 
+    return episodes

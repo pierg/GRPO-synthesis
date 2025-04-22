@@ -11,20 +11,21 @@ from .modules import TransformerBlock, RMSNorm, Qwen2RotaryEmbedding
 
 class Transformer(nn.Module):
     """The complete Qwen2 transformer model.
-    
+
     This model implements a transformer-based language model that can be used for both
     training and inference. The key differences between these modes are:
-    
+
     Training:
     - Processes full sequences in one forward pass
     - No KV cache needed
     - Returns predictions for all positions
-    
+
     Inference:
     - Processes sequences incrementally
     - Uses KV cache for efficiency
     - Only returns prediction for next token
     """
+
     def __init__(self, params: Qwen2Config, device: torch.device):
         super().__init__()
         self.params = params
@@ -55,32 +56,32 @@ class Transformer(nn.Module):
         # Input: (batch_size, seq_len)
         # Output: (batch_size, seq_len, vocab_size)
         _bsz, seqlen = tokens.shape
-        
+
         # Token embedding
         h = self.embed_tokens(tokens)
-        
+
         # Position embeddings
         pos = torch.arange(0, seqlen, device=tokens.device, dtype=torch.int32)[None, :]
         pos_emb = self.rotary_emb(h, pos)
-        
+
         # Transformer layers
         for layer in self.layers:
             h = layer(h, pos_emb)
-        
+
         # Final normalization and projection
         h = self.norm(h)
         output = self.output_proj(h)
-        
+
         return output
 
     def inference(self, tokens: torch.Tensor, start_pos: Union[int, torch.Tensor]):
         # Input: (batch_size, seq_len)
         # Output: (batch_size, 1, vocab_size)
         _bsz, seqlen = tokens.shape
-        
+
         # Token embedding
         h = self.embed_tokens(tokens)
-        
+
         # Position embeddings
         pos = torch.arange(0, seqlen, device=tokens.device, dtype=torch.int32)[None, :]
         if isinstance(start_pos, torch.Tensor):
@@ -88,22 +89,30 @@ class Transformer(nn.Module):
         else:
             pos.add_(start_pos)
         pos_emb = self.rotary_emb(h, pos)
-        
+
         # Transformer layers
         for layer in self.layers:
             h = layer(h, pos_emb, start_pos=start_pos)
-        
+
         # Extract last token and project
         h = h[:, -1:, :]
         h = self.norm(h)
         output = self.output_proj(h)
-        
+
         return output
 
-    def init_kv_cache(self, max_batch_size: int, max_seq_len: int, device: torch.device, dtype: torch.dtype):
+    def init_kv_cache(
+        self,
+        max_batch_size: int,
+        max_seq_len: int,
+        device: torch.device,
+        dtype: torch.dtype,
+    ):
         """Initialize KV cache for all attention layers."""
         for layer in self.layers:
-            layer.self_attn.init_kv_cache(max_batch_size, max_seq_len, dtype=dtype, device=device)
+            layer.self_attn.init_kv_cache(
+                max_batch_size, max_seq_len, dtype=dtype, device=device
+            )
 
     def del_kv_cache(self):
         """Clear KV cache from all attention layers."""
@@ -143,10 +152,11 @@ class Transformer(nn.Module):
             model = cls(params=args, device=device)
 
         import safetensors.torch
+
         model_weight_files = sorted(Path(ckpt_path).glob("model*.safetensors"))
         weights = {}
         for file in model_weight_files:
             weights.update(safetensors.torch.load_file(file, device="cpu"))
         weights = {k.replace("model.", ""): v for k, v in weights.items()}
         model.load_state_dict(weights, strict=True, assign=True)
-        return model.to(device) 
+        return model.to(device)

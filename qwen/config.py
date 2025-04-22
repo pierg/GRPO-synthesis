@@ -4,6 +4,7 @@ from dataclasses import dataclass
 @dataclass
 class Qwen2Config:
     """Model configuration parameters."""
+
     attention_dropout: float = 0.0
     bos_token_id: int = 151643
     eos_token_id: int = 151645
@@ -24,4 +25,4 @@ class Qwen2Config:
     torch_dtype: str = "bfloat16"
     use_cache: bool = True
     use_sliding_window: bool = False
-    vocab_size: int = 151936 
+    vocab_size: int = 151936

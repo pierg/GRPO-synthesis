@@ -29,10 +29,18 @@ RESPONSE_PROMPT = "Let me solve this step by step.\n<think>"
 class CountdownTasksDataset(Dataset):
     """Dataset for countdown tasks - creating equations to reach target values."""
 
-    def __init__(self, tokenizer: Tokenizer, data_path: str, split: str = "train", test_size: int = 100):
+    def __init__(
+        self,
+        tokenizer: Tokenizer,
+        data_path: str,
+        split: str = "train",
+        test_size: int = 100,
+    ):
         """Loads and splits the countdown task data."""
         data = pd.read_parquet(Path(data_path) / "data")
-        self.data = data.iloc[:-test_size] if split == "train" else data.iloc[-test_size:]
+        self.data = (
+            data.iloc[:-test_size] if split == "train" else data.iloc[-test_size:]
+        )
         self.tokenizer = tokenizer
 
     def __len__(self):
@@ -76,12 +84,12 @@ class CountdownTasksDataset(Dataset):
 
 class RewardEvaluator:
     """Evaluates format and mathematical correctness of countdown task responses."""
-    
+
     @staticmethod
     def format_reward(response: str, end_token: Optional[str] = None) -> float:
         """Checks if response follows <think>reasoning</think>\n<answer>solution</answer> format."""
         if end_token and response.endswith(end_token):
-            response = response[:-len(end_token)]
+            response = response[: -len(end_token)]
 
         think_regex = r"<think>.*?<\/think>"
         answer_regex = r"<answer>.*?<\/answer>"
@@ -102,7 +110,9 @@ class RewardEvaluator:
         return reward
 
     @staticmethod
-    def answer_reward(response: str, numbers: List[int] = None, target: int = None) -> float:
+    def answer_reward(
+        response: str, numbers: List[int] = None, target: int = None
+    ) -> float:
         """Checks if answer uses all numbers once and evaluates to target value."""
         answer_match = re.search(r"<answer>(.*?)<\/answer>", response, re.DOTALL)
         if not answer_match:
@@ -125,11 +135,17 @@ class RewardEvaluator:
         return 0.0
 
     @classmethod
-    def evaluate(cls, response: str, numbers: List[int] = None, target: int = None, end_token: str = None) -> Dict[str, Any]:
+    def evaluate(
+        cls,
+        response: str,
+        numbers: List[int] = None,
+        target: int = None,
+        end_token: str = None,
+    ) -> Dict[str, Any]:
         """Combines format reward (0.1) and answer reward (1.0) into total score."""
         format_reward = cls.format_reward("<think>" + response, end_token)
         answer_reward = cls.answer_reward(response, numbers, target)
-        
+
         return {
             "reward": format_reward * 0.1 + answer_reward,
             "reward_info": {

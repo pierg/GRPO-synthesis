@@ -1,6 +1,6 @@
 # GRPO-synthesis
 
-A Python implementation of the Qwen2.5-3B-Instruct model for text generation and fine-tuning using GRPO.
+A Python implementation of the Qwen2.5-3B-Instruct model for text generation and fine-tuning using various Reinforcement Learning algorithms.
 
 ## Prerequisites
 
@@ -44,3 +44,23 @@ Generate training episodes for fine-tuning:
 uv run generate_episodes.py --batch_size 4 --num_answers 4 --max_gen_len 512 --resume --print_generation
 ```
 This script generates multiple responses per question and evaluates them using the countdown task reward function.
+
+## Fine-tuning Methods
+
+The codebase supports three different Reinforcement Learning algorithms for fine-tuning:
+
+1. **REINFORCE**
+   - Basic policy gradient method
+   - Uses raw advantages for policy updates
+   - Simple and effective for basic tasks
+
+2. **GRPO (Generalized REINFORCE Policy Optimization)**
+   - Extends REINFORCE with ratio clipping
+   - Includes KL divergence penalty for policy stability
+   - Uses group-based advantages for better credit assignment
+
+3. **PPO (Proximal Policy Optimization)**
+   - Value function (critic) for advantage estimation
+   - Includes KL divergence penalty and entropy bonus
+
+Each method can be selected by passing the appropriate `method` parameter to the `compute_policy_gradient` function, along with method-specific parameters like `clip_eps`, `kl_coef`, and `value_model`.

@@ -5,6 +5,7 @@ from typing import Dict, List
 from .types import Episode
 from .utils import normalize_rewards_per_group, compute_entropy
 
+
 def update_policy(
     model: torch.nn.Module,
     optimizer: torch.optim.Optimizer,
@@ -46,15 +47,15 @@ def update_policy(
 
         # Create padded token sequences and masks
         batch_token_ids = [
-            ep.prefix_token_ids +
-            ep.generated_token_ids +
-            [pad_token_id] * (batch_max_length - batch_lengths[k])
+            ep.prefix_token_ids
+            + ep.generated_token_ids
+            + [pad_token_id] * (batch_max_length - batch_lengths[k])
             for k, ep in enumerate(batch_episodes)
         ]
         batch_masks = [
-            [0] * len(ep.prefix_token_ids) +
-            [1] * len(ep.generated_token_ids) +
-            [0] * (batch_max_length - batch_lengths[k])
+            [0] * len(ep.prefix_token_ids)
+            + [1] * len(ep.generated_token_ids)
+            + [0] * (batch_max_length - batch_lengths[k])
             for k, ep in enumerate(batch_episodes)
         ]
         batch_advantages = [ep.reward for ep in batch_episodes]
@@ -62,7 +63,9 @@ def update_policy(
         # Convert to tensors
         batch_token_ids = torch.tensor(batch_token_ids, device=device, dtype=torch.long)
         batch_masks = torch.tensor(batch_masks, device=device, dtype=torch.bool)
-        batch_advantages = torch.tensor(batch_advantages, device=device, dtype=torch.float32)
+        batch_advantages = torch.tensor(
+            batch_advantages, device=device, dtype=torch.float32
+        )
 
         # Forward pass
         with torch.autocast(device_type=device.type, dtype=dtype):
@@ -103,4 +106,4 @@ def update_policy(
         "loss": loss.item(),
         "grad_norm": grad_norm.item(),
         "entropy": entropy.item(),
-    } 
+    }

@@ -3,6 +3,7 @@ import sys
 
 logger = loguru.logger
 
+
 def configure_logging():
     """Configure loguru logging without extra new lines."""
     logger.remove()
@@ -16,13 +17,8 @@ def configure_logging():
         retention="7 days",
         level="DEBUG",
         format=log_format,
-        colorize=True
+        colorize=True,
     )
 
     # Console logging (use sys.stderr for cleaner default behavior)
-    logger.add(
-        sys.stderr,
-        level="DEBUG",
-        format=log_format,
-        colorize=True
-    )
+    logger.add(sys.stderr, level="DEBUG", format=log_format, colorize=True)
