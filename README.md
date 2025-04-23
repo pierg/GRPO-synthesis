@@ -63,4 +63,18 @@ The codebase supports three different Reinforcement Learning algorithms for fine
    - Value function (critic) for advantage estimation
    - Includes KL divergence penalty and entropy bonus
 
-Each method can be selected by passing the appropriate `method` parameter to the `compute_policy_gradient` function, along with method-specific parameters like `clip_eps`, `kl_coef`, and `value_model`.
+Each method can be selected by passing the appropriate `method` parameter to the `compute_policy_gradient`.
+
+
+
+
+
+## Acknowledgements
+
+This project is experiment on variations of the
+
+- [GRPO-Zero](https://github.com/policy-gradient/GRPO-Zero) for implementing a simplified version of GRPO (i.e. REINFORCE with group-normalized rewards)
+
+- [DeepSeekMath](https://arxiv.org/abs/2402.03300) for pioneering the GRPO algorithm.
+- [nano-aha-moment](https://github.com/McGill-NLP/nano-aha-moment/tree/main) for their clear implementation and tutorial on the GRPO algorithm.
+- [Qwen2.5](https://huggingface.co/Qwen/Qwen2.5-3B-Instruct) for developing the high-quality pretrained model used in this project.
