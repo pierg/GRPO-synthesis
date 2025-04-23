@@ -25,8 +25,7 @@ from utils.loading import load_model_and_tokenizer
 from utils.logging import logger
 from utils.serialization import save_dataclass_list
 from tasks.countdown_task import CountdownTasksDataset, RewardEvaluator
-from fine_tuning.grpo.rollout import rollout
-from fine_tuning.grpo.types import Episode
+from fine_tuning.rollout import rollout
 
 
 def print_generated_text(tokens: torch.Tensor, tokenizer, prefix_length: int) -> None:
