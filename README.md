@@ -52,7 +52,6 @@ The codebase supports three different Reinforcement Learning algorithms for fine
 1. **REINFORCE**
    - Basic policy gradient method
    - Uses raw advantages for policy updates
-   - Simple and effective for basic tasks
 
 2. **GRPO (Generalized REINFORCE Policy Optimization)**
    - Extends REINFORCE with ratio clipping
@@ -71,10 +70,11 @@ Each method can be selected by passing the appropriate `method` parameter to the
 
 ## Acknowledgements
 
-This project is experiment on variations of the
+This project build upon the work of:
+- [GRPO-Zero](https://github.com/policy-gradient/GRPO-Zero), where they implement simplified version of GRPO (i.e. REINFORCE with group-normalized rewards)
 
-- [GRPO-Zero](https://github.com/policy-gradient/GRPO-Zero) for implementing a simplified version of GRPO (i.e. REINFORCE with group-normalized rewards)
+Other relevant references:
 
-- [DeepSeekMath](https://arxiv.org/abs/2402.03300) for pioneering the GRPO algorithm.
-- [nano-aha-moment](https://github.com/McGill-NLP/nano-aha-moment/tree/main) for their clear implementation and tutorial on the GRPO algorithm.
-- [Qwen2.5](https://huggingface.co/Qwen/Qwen2.5-3B-Instruct) for developing the high-quality pretrained model used in this project.
+- [DeepSeekMath](https://arxiv.org/abs/2402.03300): introduction of the GRPO algorithm.
+- [nano-aha-moment](https://github.com/McGill-NLP/nano-aha-moment/tree/main): tutorial on the GRPO algorithm.
+- [Qwen2.5](https://huggingface.co/Qwen/Qwen2.5-3B-Instruct): high-quality pretrained model used in this project.
