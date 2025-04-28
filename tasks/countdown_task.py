@@ -5,7 +5,7 @@ from typing import Any, Dict, List, Optional
 import pandas as pd
 from torch.utils.data import Dataset
 
-from fine_tuning.grpo.types import MiniBatch
+from fine_tuning.types import MiniBatch
 from tokenizer.tokenizer import Tokenizer
 
 # System message template for the AI assistant
